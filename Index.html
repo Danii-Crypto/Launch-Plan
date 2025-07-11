@@ -9,61 +9,1011 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    
-    <!-- Add Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    
     <style>
-        /* ... (existing styles remain unchanged) ... */
+        /* Blockchain Theme Styles */
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-accent: #16213e;
+            --text-primary: #e0e6ed;
+            --text-secondary: #8b949e;
+            --accent-blue: #00d4ff;
+            --accent-green: #00ff88;
+            --accent-purple: #a855f7;
+            --accent-orange: #ff6b35;
+            --border-color: #30363d;
+            --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+        }
+
+        .blockchain-card {
+            background: linear-gradient(145deg, var(--bg-secondary), var(--bg-accent));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .blockchain-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--accent-blue);
+        }
+
+        .blockchain-button {
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-green));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .blockchain-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .blockchain-tab {
+            background: var(--bg-accent);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .blockchain-tab.active {
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            box-shadow: 0 2px 10px rgba(0, 212, 255, 0.4);
+        }
+
+        .blockchain-input {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .blockchain-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+            outline: none;
+        }
+
+        .blockchain-table {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .blockchain-table th {
+            background: var(--bg-accent);
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .blockchain-table td {
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .blockchain-table tr:hover {
+            background: var(--bg-accent);
+        }
+
+        .progress-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-blue);
+            position: relative;
+            background: conic-gradient(var(--accent-blue) 0deg, var(--accent-green) 180deg, var(--border-color) 360deg);
+        }
+
+        .blockchain-badge {
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .blockchain-search {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 10px 20px;
+            width: 300px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .blockchain-search:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+            outline: none;
+        }
+
+        .client-hexagon {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-accent));
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 10px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .client-hexagon:hover {
+            border-color: var(--accent-blue);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .client-hexagon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(0, 212, 255, 0.1), transparent);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .client-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .modal-blockchain {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content-blockchain {
+            background: linear-gradient(145deg, var(--bg-secondary), var(--bg-accent));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        @media print {
+            body { margin: 0; padding: 0; }
+            .no-print { display: none !important; }
+        }
+
+        .task-row:hover { background-color: var(--bg-accent); }
+        .priority-required { border-left: 4px solid var(--accent-orange); }
+        .priority-optional { border-left: 4px solid var(--accent-green); }
+        .status-todo { background-color: rgba(255, 107, 53, 0.1); }
+        .status-discuss { background-color: rgba(168, 85, 247, 0.1); }
+        .status-done { background-color: rgba(0, 255, 136, 0.1); }
+        .status-progress { background-color: rgba(0, 212, 255, 0.1); }
+        .env-online { background-color: rgba(0, 212, 255, 0.1); }
+        .env-zoom { background-color: rgba(168, 85, 247, 0.1); }
+        .env-production { background-color: rgba(255, 107, 53, 0.1); }
+        .env-beta { background-color: rgba(255, 193, 7, 0.1); }
+        .env-adobe { background-color: rgba(168, 85, 247, 0.1); }
+        .env-slack { background-color: rgba(0, 255, 136, 0.1); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .blockchain-stats {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-accent));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .blockchain-stats:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .blockchain-stats .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-results {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .search-result-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .search-result-item:hover {
+            background: var(--bg-accent);
+        }
     </style>
 </head>
 <body class="min-h-screen">
     <div class="container mx-auto px-4 py-6">
-        <!-- ... (existing HTML structure remains unchanged) ... -->
+        <!-- Header with Search -->
+        <div class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold mb-2" style="background: linear-gradient(45deg, var(--accent-blue), var(--accent-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Launch Plan Management Dashboard</h1>
+                <p class="text-gray-400">Client onboarding tracking and management system</p>
+            </div>
+            <div class="relative">
+                <input type="text" id="globalSearch" class="blockchain-search" placeholder="Search launch plans...">
+                <div id="searchResults" class="search-results absolute top-full mt-2 w-full hidden z-50"></div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="blockchain-card mb-6">
+            <div class="flex border-b border-gray-700">
+                <button class="blockchain-tab px-6 py-3 font-medium active" data-tab="dashboard">
+                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                </button>
+                <button class="blockchain-tab px-6 py-3 font-medium" data-tab="launch-plan">
+                    <i class="fas fa-rocket mr-2"></i>Launch Plan
+                </button>
+                <button class="blockchain-tab px-6 py-3 font-medium" data-tab="manage-clients">
+                    <i class="fas fa-users mr-2"></i>Manage Clients
+                </button>
+                <button class="blockchain-tab px-6 py-3 font-medium" data-tab="reports">
+                    <i class="fas fa-chart-bar mr-2"></i>Reports
+                </button>
+                <button class="blockchain-tab px-6 py-3 font-medium" data-tab="instructions">
+                    <i class="fas fa-book mr-2"></i>Instructions
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <!-- Client Progress Dashboard -->
+            <div class="blockchain-card p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fas fa-chart-line mr-2" style="color: var(--accent-blue);"></i>
+                    Client Progress Dashboard
+                </h2>
+                <div id="clientDashboard" class="flex overflow-x-auto pb-4 space-x-4">
+                    <!-- Client hexagon cards will be populated here -->
+                </div>
+            </div>
+
+            <!-- Overall Statistics -->
+            <div class="blockchain-card p-6 mb-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center">
+                    <i class="fas fa-chart-pie mr-2" style="color: var(--accent-purple);"></i>
+                    Overall Statistics
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                    <div class="blockchain-stats">
+                        <div class="stat-value" id="totalClients">0</div>
+                        <div class="text-sm text-gray-400">Total Clients</div>
+                    </div>
+                    <div class="blockchain-stats">
+                        <div class="stat-value" id="completedLaunches">0</div>
+                        <div class="text-sm text-gray-400">Completed Launches</div>
+                    </div>
+                    <div class="blockchain-stats">
+                        <div class="stat-value" id="activeLaunches">0</div>
+                        <div class="text-sm text-gray-400">Active Launches</div>
+                    </div>
+                    <div class="blockchain-stats">
+                        <div class="stat-value" id="overdueClients">0</div>
+                        <div class="text-sm text-gray-400">Overdue</div>
+                    </div>
+                </div>
+                <div style="height: 300px;">
+                    <canvas id="overallChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Launch Plan Tab -->
+        <div id="launch-plan" class="tab-content">
+            <!-- Current Client Selection -->
+            <div class="blockchain-card p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fas fa-user mr-2" style="color: var(--accent-blue);"></i>
+                    Select Client
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Current Client</label>
+                        <select id="currentClientSelect" class="blockchain-input w-full p-2">
+                            <option value="">Select a client...</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button id="newClientBtn" class="blockchain-button flex items-center">
+                            <i class="fas fa-plus mr-2"></i>Create New Launch Plan
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Overview -->
+            <div id="projectOverview" class="blockchain-card p-6 mb-6" style="display: none;">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fas fa-info-circle mr-2" style="color: var(--accent-blue);"></i>
+                    Project Overview
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <div class="p-4 rounded-lg" style="background: var(--bg-accent);">
+                        <label class="block text-sm font-medium mb-2">Client Name</label>
+                        <input type="text" id="clientName" class="blockchain-input w-full p-2" placeholder="Enter client name">
+                    </div>
+                    <div class="p-4 rounded-lg" style="background: var(--bg-accent);">
+                        <label class="block text-sm font-medium mb-2">Account#</label>
+                        <input type="text" id="accountNumber" class="blockchain-input w-full p-2" placeholder="Enter account number">
+                    </div>
+                    <div class="p-4 rounded-lg" style="background: var(--bg-accent);">
+                        <label class="block text-sm font-medium mb-2">Start Date</label>
+                        <input type="date" id="startDate" class="blockchain-input w-full p-2">
+                    </div>
+                    <div class="p-4 rounded-lg" style="background: var(--bg-accent);">
+                        <label class="block text-sm font-medium mb-2">Launch Date</label>
+                        <input type="date" id="launchDate" class="blockchain-input w-full p-2">
+                    </div>
+                    <div class="p-4 rounded-lg" style="background: var(--bg-accent);">
+                        <label class="block text-sm font-medium mb-2">AE Name</label>
+                        <input type="text" id="aeName" class="blockchain-input w-full p-2" placeholder="Account Executive">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div class="p-4 rounded-lg" style="background: var(--bg-accent);">
+                        <label class="block text-sm font-medium mb-2">CS Name</label>
+                        <input type="text" id="csName" class="blockchain-input w-full p-2" placeholder="Customer Success">
+                    </div>
+                    <div class="p-4 rounded-lg flex items-end">
+                        <button id="saveClientBtn" class="blockchain-button flex items-center">
+                            <i class="fas fa-save mr-2"></i>Save Client Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Overview -->
+            <div id="progressOverview" class="blockchain-card p-6 mb-6" style="display: none;">
+                <h3 class="text-lg font-semibold mb-4 flex items-center">
+                    <i class="fas fa-chart-line mr-2" style="color: var(--accent-purple);"></i>
+                    Progress Overview
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                    <div class="blockchain-stats">
+                        <div class="stat-value" id="totalTasks">0</div>
+                        <div class="text-sm text-gray-400">Total Tasks</div>
+                    </div>
+                    <div class="blockchain-stats">
+                        <div class="stat-value" id="completedTasks">0</div>
+                        <div class="text-sm text-gray-400">Completed</div>
+                    </div>
+                    <div class="blockchain-stats">
+                        <div class="stat-value" id="inProgressTasks">0</div>
+                        <div class="text-sm text-gray-400">In Progress</div>
+                    </div>
+                    <div class="blockchain-stats">
+                        <div class="stat-value" id="overdueTasks">0</div>
+                        <div class="text-sm text-gray-400">Overdue</div>
+                    </div>
+                </div>
+                <div style="height: 300px;">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Filters and Controls -->
+            <div id="filtersControls" class="blockchain-card p-6 mb-6 no-print" style="display: none;">
+                <h3 class="text-lg font-semibold mb-4 flex items-center">
+                    <i class="fas fa-filter mr-2" style="color: var(--accent-green);"></i>
+                    Filters & Controls
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Filter by Environment</label>
+                        <select id="environmentFilter" class="blockchain-input w-full p-2">
+                            <option value="">All Environments</option>
+                            <option value="Online">Online</option>
+                            <option value="Zoom/Google Meet">Zoom/Google Meet</option>
+                            <option value="Production">Production</option>
+                            <option value="Beta">Beta</option>
+                            <option value="Adobe">Adobe</option>
+                            <option value="Slack/Telegram">Slack/Telegram</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Filter by Priority</label>
+                        <select id="priorityFilter" class="blockchain-input w-full p-2">
+                            <option value="">All Priorities</option>
+                            <option value="Required">Required</option>
+                            <option value="Optional">Optional</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Filter by Status</label>
+                        <select id="statusFilter" class="blockchain-input w-full p-2">
+                            <option value="">All Statuses</option>
+                            <option value="To do">To do</option>
+                            <option value="To discuss">To discuss</option>
+                            <option value="In progress">In progress</option>
+                            <option value="Done">Done</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Filter by Owner</label>
+                        <select id="ownerFilter" class="blockchain-input w-full p-2">
+                            <option value="">All Owners</option>
+                            <option value="sFOX - CS">sFOX - CS</option>
+                            <option value="sFOX - AE">sFOX - AE</option>
+                            <option value="Client to assign">Client to assign</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-4 mt-4">
+                    <button id="addTaskBtn" class="blockchain-button flex items-center">
+                        <i class="fas fa-plus mr-2"></i>Add Task
+                    </button>
+                    <button id="exportBtn" class="blockchain-button flex items-center">
+                        <i class="fas fa-download mr-2"></i>Export Data
+                    </button>
+                    <button id="resetFilters" class="blockchain-button flex items-center">
+                        <i class="fas fa-refresh mr-2"></i>Reset Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Task Management Table -->
+            <div id="taskManagement" class="blockchain-card p-6" style="display: none;">
+                <h3 class="text-lg font-semibold mb-4 flex items-center">
+                    <i class="fas fa-tasks mr-2" style="color: var(--accent-purple);"></i>
+                    Task Management
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="blockchain-table w-full">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Environment</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Task</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Owner</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Priority</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Start Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Due Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Duration</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="taskTableBody">
+                            <!-- Tasks will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Clients Tab -->
+        <div id="manage-clients" class="tab-content">
+            <div class="blockchain-card p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <i class="fas fa-users mr-2" style="color: var(--accent-blue);"></i>
+                        All Clients
+                    </h2>
+                    <div class="flex gap-2">
+                        <button id="toggleArchivedBtn" class="blockchain-button flex items-center">
+                            <i class="fas fa-eye mr-2"></i>Show Archived
+                        </button>
+                        <button id="toggleCompletedBtn" class="blockchain-button flex items-center">
+                            <i class="fas fa-check-circle mr-2"></i>Show Completed
+                        </button>
+                        <button id="exportAllBtn" class="blockchain-button flex items-center">
+                            <i class="fas fa-file-export mr-2"></i>Export All Launch Plans
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="blockchain-table w-full">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Client Name</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Account#</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Product</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">AE Name</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">CS Name</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Start Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Launch Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Progress</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientTableBody">
+                            <!-- Clients will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content">
+            <div class="blockchain-card p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fas fa-chart-bar mr-2" style="color: var(--accent-blue);"></i>
+                    Analytics & Reports
+                </h2>
+                
+                <!-- Filters -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Date Range</label>
+                        <select id="reportDateFilter" class="blockchain-input w-full p-2">
+                            <option value="">All Time</option>
+                            <option value="7">Last 7 Days</option>
+                            <option value="30">Last 30 Days</option>
+                            <option value="90">Last 90 Days</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Account Executive</label>
+                        <select id="reportAEFilter" class="blockchain-input w-full p-2">
+                            <option value="">All AEs</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Product Type</label>
+                        <select id="reportProductFilter" class="blockchain-input w-full p-2">
+                            <option value="">All Products</option>
+                            <option value="Trading">Trading</option>
+                            <option value="Connect">Connect</option>
+                            <option value="SAFE Custody">SAFE Custody</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Status</label>
+                        <select id="reportStatusFilter" class="blockchain-input w-full p-2">
+                            <option value="">All Statuses</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                            <option value="overdue">Overdue</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 mb-6">
+                    <button id="applyReportFilters" class="blockchain-button flex items-center">
+                        <i class="fas fa-filter mr-2"></i>Apply Filters
+                    </button>
+                    <button id="resetReportFilters" class="blockchain-button flex items-center">
+                        <i class="fas fa-refresh mr-2"></i>Reset Filters
+                    </button>
+                    <button id="exportReportPDF" class="blockchain-button flex items-center">
+                        <i class="fas fa-file-pdf mr-2"></i>Export Report as PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Executive Summary -->
+            <div class="blockchain-card p-6 mb-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center">
+                    <i class="fas fa-chart-line mr-2" style="color: var(--accent-purple);"></i>
+                    Executive Summary
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="blockchain-stats">
+                        <div class="stat-value" id="reportTotalClients">0</div>
+                        <div class="text-sm text-gray-400">Total Launch Plans</div>
+                    </div>
+                    <div class="blockchain-stats">
+                        <div class="stat-value" id="reportAvgProgress">0%</div>
+                        <div class="text-sm text-gray-400">Average Progress</div>
+                    </div>
+                    <div class="blockchain-stats">
+                        <div class="stat-value" id="reportOnTimeDelivery">0%</div>
+                        <div class="text-sm text-gray-400">On-Time Delivery</div>
+                    </div>
+                    <div class="blockchain-stats">
+                        <div class="stat-value" id="reportActiveProjects">0</div>
+                        <div class="text-sm text-gray-400">Active Projects</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="blockchain-card p-6">
+                    <h3 class="text-lg font-semibold mb-4">Client Progress Distribution</h3>
+                    <div style="height: 300px;">
+                        <canvas id="progressDistributionChart"></canvas>
+                    </div>
+                </div>
+                <div class="blockchain-card p-6">
+                    <h3 class="text-lg font-semibold mb-4">Task Status Breakdown</h3>
+                    <div style="height: 300px;">
+                        <canvas id="taskStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="blockchain-card p-6">
+                    <h3 class="text-lg font-semibold mb-4">Product Performance</h3>
+                    <div style="height: 300px;">
+                        <canvas id="productPerformanceChart"></canvas>
+                    </div>
+                </div>
+                <div class="blockchain-card p-6">
+                    <h3 class="text-lg font-semibold mb-4">AE Performance</h3>
+                    <div style="height: 300px;">
+                        <canvas id="aePerformanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Data Table -->
+            <div class="blockchain-card p-6">
+                <h3 class="text-lg font-semibold mb-4">Detailed Analytics</h3>
+                <div class="overflow-x-auto">
+                    <table class="blockchain-table w-full">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Client</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Product</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">AE</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Progress</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Tasks</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Days Active</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody">
+                            <!-- Report data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions Tab -->
+        <div id="instructions" class="tab-content">
+            <div class="blockchain-card p-6">
+                <h2 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-book mr-2" style="color: var(--accent-blue);"></i>
+                    How to Use the Launch Plan Management Dashboard
+                </h2>
+                
+                <div class="space-y-8">
+                    <section>
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-play-circle mr-2" style="color: var(--accent-green);"></i>
+                            Getting Started
+                        </h3>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                            <li>Use the <strong>navigation tabs</strong> at the top to switch between different sections</li>
+                            <li>The <strong>Dashboard</strong> tab shows an overview of all your launch plans</li>
+                            <li>Use the <strong>search bar</strong> at the top right to quickly find specific clients</li>
+                            <li>All data is automatically saved to your browser's local storage</li>
+                        </ol>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-rocket mr-2" style="color: var(--accent-blue);"></i>
+                            Creating New Launch Plans
+                        </h3>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                            <li>Go to the <strong>Launch Plan</strong> tab</li>
+                            <li>Click <strong>"Create New Launch Plan"</strong></li>
+                            <li>Select your product type: <strong>Trading</strong>, <strong>Connect</strong>, or <strong>SAFE Custody</strong></li>
+                            <li>Fill in the client information (name, account number, dates, AE, CS)</li>
+                            <li>Click <strong>"Create Launch Plan"</strong> to generate the plan with product-specific tasks</li>
+                            <li>The system will automatically create all relevant tasks based on your product selection</li>
+                        </ol>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-edit mr-2" style="color: var(--accent-purple);"></i>
+                            Managing Clients and Tasks
+                        </h3>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                            <li>Select a client from the dropdown in the <strong>Launch Plan</strong> tab</li>
+                            <li>Edit client information in the <strong>Project Overview</strong> section</li>
+                            <li>Click <strong>"Save Client Info"</strong> to save changes and sync all task dates</li>
+                            <li>Use the <strong>Task Management</strong> table to update task statuses</li>
+                            <li>Change task status by clicking the dropdown in the Status column</li>
+                            <li>Add new tasks using the <strong>"Add Task"</strong> button</li>
+                            <li>Use filters to view specific tasks (environment, priority, status, owner)</li>
+                        </ol>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-users mr-2" style="color: var(--accent-orange);"></i>
+                            Client Management
+                        </h3>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                            <li>Go to the <strong>Manage Clients</strong> tab to see all clients</li>
+                            <li>Use <strong>"Show Archived"</strong> to toggle between active and archived clients</li>
+                            <li>Use <strong>"Show Completed"</strong> to view only completed launch plans</li>
+                            <li>Click the <strong>archive icon</strong> to archive/unarchive clients</li>
+                            <li>Click the <strong>edit icon</strong> to jump to a client's launch plan</li>
+                            <li>Use <strong>"Export All Launch Plans"</strong> to download comprehensive data</li>
+                        </ol>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-chart-bar mr-2" style="color: var(--accent-green);"></i>
+                            Reports and Analytics
+                        </h3>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                            <li>Go to the <strong>Reports</strong> tab for detailed analytics</li>
+                            <li>Use the <strong>filter options</strong> to narrow down your data view</li>
+                            <li>Apply filters by date range, AE, product type, or status</li>
+                            <li>Review the <strong>Executive Summary</strong> for key performance indicators</li>
+                            <li>Analyze the <strong>charts</strong> for visual insights on progress and performance</li>
+                            <li>Use <strong>"Export Report as PDF"</strong> to generate professional reports</li>
+                            <li>The detailed analytics table shows comprehensive client data</li>
+                        </ol>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-search mr-2" style="color: var(--accent-blue);"></i>
+                            Search and Navigation
+                        </h3>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                            <li>Use the <strong>search bar</strong> at the top right to find clients quickly</li>
+                            <li>Search by client name, account number, AE name, or CS name</li>
+                            <li>Click on search results to jump directly to that client's launch plan</li>
+                            <li>The search works across all client data and is case-insensitive</li>
+                        </ol>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-sync mr-2" style="color: var(--accent-purple);"></i>
+                            Date Synchronization
+                        </h3>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                            <li>When you change project start or launch dates, all task dates can be synchronized</li>
+                            <li>After updating dates, click <strong>"Save Client Info"</strong> to sync all tasks</li>
+                            <li>The system maintains task duration and sequence relationships</li>
+                            <li>This works for all product types: Trading, Connect, and SAFE Custody</li>
+                        </ol>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-lightbulb mr-2" style="color: var(--accent-orange);"></i>
+                            Tips and Best Practices
+                        </h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-300">
+                            <li>Regularly update task statuses to keep progress tracking accurate</li>
+                            <li>Use the archive feature to organize completed or inactive launch plans</li>
+                            <li>Export data regularly for backup and reporting purposes</li>
+                            <li>Use filters to focus on specific priorities or overdue tasks</li>
+                            <li>Review the analytics regularly to identify trends and improvements</li>
+                            <li>The system automatically saves all changes to your browser</li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- ... (existing modals remain unchanged) ... -->
+    <!-- New Client Modal -->
+    <div id="newClientModal" class="fixed inset-0 modal-blockchain hidden z-50">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="modal-content-blockchain p-6 w-full max-w-lg">
+                <h3 class="text-lg font-semibold mb-4">Create New Launch Plan</h3>
+                <form id="newClientForm">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Product Type</label>
+                        <select id="newProductType" class="blockchain-input w-full p-2" required>
+                            <option value="">Select Product Type</option>
+                            <option value="Trading">Trading</option>
+                            <option value="Connect">Connect</option>
+                            <option value="SAFE Custody">SAFE Custody</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2">Client Name</label>
+                            <input type="text" id="newClientName" class="blockchain-input w-full p-2" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2">Account#</label>
+                            <input type="text" id="newAccountNumber" class="blockchain-input w-full p-2" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2">Start Date</label>
+                            <input type="date" id="newStartDate" class="blockchain-input w-full p-2" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2">Launch Date</label>
+                            <input type="date" id="newLaunchDate" class="blockchain-input w-full p-2" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2">AE Name</label>
+                            <input type="text" id="newAeName" class="blockchain-input w-full p-2" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2">CS Name</label>
+                            <input type="text" id="newCSName" class="blockchain-input w-full p-2" required>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-6">
+                        <button type="button" id="cancelNewClient" class="px-4 py-2 border border-gray-600 rounded-md hover:bg-gray-700">Cancel</button>
+                        <button type="submit" class="blockchain-button">Create Launch Plan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="fixed inset-0 modal-blockchain hidden z-50">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="modal-content-blockchain p-6 w-full max-w-md">
+                <h3 class="text-lg font-semibold mb-4">Add New Task</h3>
+                <form id="addTaskForm">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Environment</label>
+                        <select id="newTaskEnvironment" class="blockchain-input w-full p-2" required>
+                            <option value="">Select Environment</option>
+                            <option value="Online">Online</option>
+                            <option value="Zoom/Google Meet">Zoom/Google Meet</option>
+                            <option value="Production">Production</option>
+                            <option value="Beta">Beta</option>
+                            <option value="Adobe">Adobe</option>
+                            <option value="Slack/Telegram">Slack/Telegram</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Task Description</label>
+                        <input type="text" id="newTaskDescription" class="blockchain-input w-full p-2" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Task Owner</label>
+                        <select id="newTaskOwner" class="blockchain-input w-full p-2" required>
+                            <option value="">Select Owner</option>
+                            <option value="sFOX - CS">sFOX - CS</option>
+                            <option value="sFOX - AE">sFOX - AE</option>
+                            <option value="Client to assign">Client to assign</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Priority</label>
+                        <select id="newTaskPriority" class="blockchain-input w-full p-2" required>
+                            <option value="">Select Priority</option>
+                            <option value="Required">Required</option>
+                            <option value="Optional">Optional</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Start Date</label>
+                        <input type="date" id="newTaskStartDate" class="blockchain-input w-full p-2" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Duration (days)</label>
+                        <input type="number" id="newTaskDuration" class="blockchain-input w-full p-2" min="0" value="1">
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" id="cancelAddTask" class="px-4 py-2 border border-gray-600 rounded-md hover:bg-gray-700">Cancel</button>
+                        <button type="submit" class="blockchain-button">Add Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyA05mM4enMjlOqlAgAfOKcbzWDbmL0ty0M",
-            authDomain: "launch-plan-84f8d.firebaseapp.com",
-            projectId: "launch-plan-84f8d",
-            storageBucket: "launch-plan-84f8d.appspot.com",
-            messagingSenderId: "29280389809",
-            appId: "1:29280389809:web:78b4debece89b97da5b090",
-            measurementId: "G-H2V485X6WN"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-        
-        // Product-specific task templates (unchanged)
+        // Product-specific task templates
         const productTemplates = {
-            // ... (existing templates) ...
+            Trading: [
+                { id: 1, environment: "Online", task: "Launch prep", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 2, environment: "Zoom/Google Meet", task: "Planning session 1: Keys to success", owner: "sFOX - AE", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 3, environment: "Slack/Telegram", task: "Create group chat", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 4, environment: "Production", task: "Register as a business", owner: "Client to assign", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 5, environment: "Production", task: "Verify your account", owner: "Client to assign", priority: "Required", status: "To do", startDate: "2024-12-23", dueDate: "2024-12-26", duration: 3, delay: 1 },
+                { id: 6, environment: "Production", task: "Confirm: Verified, rates, deposits", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-23", dueDate: "2024-12-26", duration: 3, delay: 1 },
+                { id: 7, environment: "Zoom/Google Meet", task: "Conformance & Testing Session: Deposit, trading", owner: "sFOX - AE", priority: "Required", status: "To do", startDate: "2024-12-24", dueDate: "2024-12-24", duration: 0, delay: 4 },
+                { id: 8, environment: "Production", task: "Launch trading/custody", owner: "Client to assign", priority: "Required", status: "To do", startDate: "2024-12-27", dueDate: "2024-12-29", duration: 2, delay: 7 },
+                { id: 9, environment: "Production", task: "Link a bank", owner: "Client to assign", priority: "Optional", status: "To do", startDate: "2024-12-23", dueDate: "2024-12-23", duration: 0, delay: 2 },
+                { id: 10, environment: "Production", task: "Invite your team", owner: "Client to assign", priority: "Optional", status: "To discuss", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 11, environment: "Production", task: "Secure your account with 2fa/u2f", owner: "Client to assign", priority: "Optional", status: "To discuss", startDate: "2024-12-23", dueDate: "2024-12-23", duration: 0, delay: 1 },
+                { id: 12, environment: "Zoom/Google Meet", task: "SAFE Custody Services Introduction", owner: "sFOX - AE", priority: "Optional", status: "To discuss", startDate: "2024-12-23", dueDate: "2024-12-23", duration: 0, delay: 3 },
+                { id: 13, environment: "Online", task: "Fill post trade settlement form", owner: "Client to assign", priority: "Optional", status: "To discuss", startDate: "2024-12-23", dueDate: "2024-12-25", duration: 2, delay: 3 },
+                { id: 14, environment: "Beta", task: "Create demo account", owner: "sFOX - CS", priority: "Optional", status: "To discuss", startDate: "2024-12-25", dueDate: "2024-12-25", duration: 0, delay: 5 },
+                { id: 15, environment: "Beta", task: "Build API connectivity", owner: "Client to assign", priority: "Optional", status: "To discuss", startDate: "2024-12-26", dueDate: "2025-01-01", duration: 6, delay: 6 },
+                { id: 16, environment: "Adobe", task: "Sign SAFE custody agreement", owner: "sFOX - CS", priority: "Optional", status: "To discuss", startDate: "2024-12-27", dueDate: "2024-12-31", duration: 4, delay: 7 },
+                { id: 17, environment: "Adobe", task: "Sign post trade settlement agreement", owner: "Client to assign", priority: "Optional", status: "To discuss", startDate: "2024-12-30", dueDate: "2025-01-05", duration: 6, delay: 9 }
+            ],
+            Connect: [
+                { id: 1, environment: "Online", task: "Launch prep", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 2, environment: "Zoom", task: "Planning session 1: Keys to success", owner: "sFOX - AE", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 3, environment: "Slack/Telegram", task: "Create group chat", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 4, environment: "Production", task: "Register as a business", owner: "Client to assign", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 5, environment: "Production", task: "Verify your account", owner: "Client to assign", priority: "Required", status: "To do", startDate: "2024-12-21", dueDate: "2024-12-24", duration: 3, delay: 1 },
+                { id: 6, environment: "Production", task: "Confirm: Verified, entity, & deposits enabled", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-21", dueDate: "2024-12-24", duration: 3, delay: 1 },
+                { id: 7, environment: "Production", task: "Send Connect quote", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-21", dueDate: "2024-12-24", duration: 3, delay: 1 },
+                { id: 8, environment: "Adobe", task: "Sign Connect quote", owner: "Client to assign", priority: "Required", status: "To do", startDate: "2024-12-21", dueDate: "2024-12-24", duration: 3, delay: 1 },
+                { id: 9, environment: "Beta", task: "Build sFOX Connect API Connectivity", owner: "Client to assign", priority: "Required", status: "To do", startDate: "2024-12-26", dueDate: "2024-12-31", duration: 5, delay: 4 },
+                { id: 10, environment: "Beta", task: "Share Enterprise BETA API key", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-26", dueDate: "2024-12-26", duration: 0, delay: 4 },
+                { id: 11, environment: "Production", task: "Build sFOX Connect API Connectivity", owner: "Client to assign", priority: "Required", status: "To do", startDate: "2024-12-29", dueDate: "2025-01-03", duration: 5, delay: 9 },
+                { id: 12, environment: "Production", task: "Share Enterprise PRODUCTION API key", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-29", dueDate: "2024-12-29", duration: 0, delay: 9 },
+                { id: 13, environment: "Production", task: "Launch sFOX Connect", owner: "Client to assign", priority: "Required", status: "To do", startDate: "2024-12-27", dueDate: "2024-12-29", duration: 2, delay: 7 },
+                { id: 14, environment: "Adobe", task: "Sign SAFE custody agreement", owner: "sFOX - CS", priority: "Optional", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-23", duration: 3, delay: 0 },
+                { id: 15, environment: "Production", task: "Invite your team", owner: "Client to assign", priority: "Optional", status: "To discuss", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 16, environment: "Production", task: "Secure your account with 2fa/u2f", owner: "Client to assign", priority: "Optional", status: "To discuss", startDate: "2024-12-21", dueDate: "2024-12-21", duration: 0, delay: 1 },
+                { id: 17, environment: "Production", task: "Link a bank", owner: "Client to assign", priority: "Optional", status: "To discuss", startDate: "2024-12-22", dueDate: "2024-12-22", duration: 0, delay: 2 },
+                { id: 18, environment: "Zoom", task: "sFOX Connect check-in", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-30", dueDate: "2024-12-30", duration: 0, delay: 10 }
+            ],
+            "SAFE Custody": [
+                { id: 1, environment: "Online", task: "Launch prep", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 2, environment: "Zoom", task: "Planning session 1: Keys to success", owner: "sFOX - AE", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 3, environment: "Slack/Telegram", task: "Create group chat", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 4, environment: "Adobe", task: "Sign SAFE custody agreement", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 5, environment: "Production", task: "Register as a business", owner: "Client to assign", priority: "Required", status: "To do", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 6, environment: "Production", task: "Verify your account", owner: "Client to assign", priority: "Required", status: "To do", startDate: "2024-12-21", dueDate: "2024-12-24", duration: 3, delay: 1 },
+                { id: 7, environment: "Production", task: "Confirm: Verified, entity, & deposits enabled", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-21", dueDate: "2024-12-24", duration: 3, delay: 1 },
+                { id: 8, environment: "Zoom", task: "Testing session: Deposits, workflow, & whitelist", owner: "sFOX - AE", priority: "Required", status: "To do", startDate: "2024-12-25", dueDate: "2024-12-25", duration: 0, delay: 5 },
+                { id: 9, environment: "Production", task: "Launch custody", owner: "Client to assign", priority: "Required", status: "To do", startDate: "2024-12-27", dueDate: "2024-12-29", duration: 2, delay: 7 },
+                { id: 10, environment: "Production", task: "Invite your team", owner: "Client to assign", priority: "Optional", status: "To discuss", startDate: "2024-12-20", dueDate: "2024-12-20", duration: 0, delay: 0 },
+                { id: 11, environment: "Production", task: "Secure your account with 2fa/u2f", owner: "Client to assign", priority: "Optional", status: "To discuss", startDate: "2024-12-21", dueDate: "2024-12-21", duration: 0, delay: 1 },
+                { id: 12, environment: "Production", task: "Link a bank", owner: "Client to assign", priority: "Optional", status: "To discuss", startDate: "2024-12-22", dueDate: "2024-12-22", duration: 0, delay: 2 },
+                { id: 13, environment: "Zoom", task: "Custody check-in", owner: "sFOX - CS", priority: "Required", status: "To do", startDate: "2024-12-30", dueDate: "2024-12-30", duration: 0, delay: 10 }
+            ]
         };
 
         // Application state
-        let clients = [];
+        let clients = JSON.parse(localStorage.getItem('launchPlanClients') || '[]');
         let currentClient = null;
         let filteredTasks = [];
         let progressChart = null;
         let overallChart = null;
         let showArchived = false;
         let showCompleted = false;
-        let unsubscribeClients = null;
-        let unsubscribeClientTasks = null;
+
+        // Chart references for reports
+        let progressDistributionChart = null;
+        let taskStatusChart = null;
+        let productPerformanceChart = null;
+        let aePerformanceChart = null;
 
         // Initialize the application
-        async function initializeApp() {
-            await setupFirebaseAuth();
+        function initializeApp() {
             setupEventListeners();
-            await loadClients();
             loadClientsDropdown();
             renderClientDashboard();
             renderClientTable();
@@ -80,102 +1030,176 @@
             document.getElementById('newLaunchDate').value = nextWeek.toISOString().split('T')[0];
         }
 
-        // Firebase Authentication
-        async function setupFirebaseAuth() {
-            return new Promise((resolve) => {
-                auth.onAuthStateChanged(async (user) => {
-                    if (user) {
-                        console.log("User signed in:", user.email);
-                        resolve();
-                    } else {
-                        // Sign in anonymously
-                        await auth.signInAnonymously();
-                        console.log("Signed in anonymously");
-                        resolve();
-                    }
-                });
-            });
-        }
-
-        // Load clients from Firestore
-        async function loadClients() {
-            return new Promise((resolve, reject) => {
-                unsubscribeClients = db.collection("clients")
-                    .where("userId", "==", auth.currentUser.uid)
-                    .onSnapshot((snapshot) => {
-                        clients = [];
-                        snapshot.forEach(doc => {
-                            clients.push({ id: doc.id, ...doc.data() });
-                        });
-                        resolve();
-                    }, (error) => {
-                        console.error("Error loading clients:", error);
-                        reject(error);
-                    });
-            });
-        }
-
         // Setup event listeners
         function setupEventListeners() {
-            // ... (existing event listeners remain) ...
-            
-            // Add new event listener for sign out
-            document.getElementById('signOutBtn')?.addEventListener('click', signOut);
-        }
+            // Tab navigation
+            document.querySelectorAll('.blockchain-tab').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetTab = this.dataset.tab;
+                    switchTab(targetTab);
+                });
+            });
 
-        // Save client to Firestore
-        async function saveClient(client) {
-            try {
-                client.userId = auth.currentUser.uid;
-                if (client.id) {
-                    await db.collection("clients").doc(client.id).set(client);
+            // Global search
+            document.getElementById('globalSearch').addEventListener('input', handleGlobalSearch);
+
+            // Client selection
+            document.getElementById('currentClientSelect').addEventListener('change', function() {
+                const clientId = this.value;
+                if (clientId) {
+                    loadClient(clientId);
                 } else {
-                    const docRef = await db.collection("clients").add(client);
-                    client.id = docRef.id;
+                    hideClientSections();
                 }
-                return client;
-            } catch (error) {
-                console.error("Error saving client:", error);
-                throw error;
-            }
-        }
+            });
 
-        // Delete client from Firestore
-        async function deleteClient(clientId) {
-            try {
-                await db.collection("clients").doc(clientId).delete();
-            } catch (error) {
-                console.error("Error deleting client:", error);
-                throw error;
-            }
-        }
+            // New client button
+            document.getElementById('newClientBtn').addEventListener('click', () => {
+                document.getElementById('newClientModal').classList.remove('hidden');
+            });
 
-        // Save tasks for a client
-        async function saveTasks(clientId, tasks) {
-            try {
-                await db.collection("clients").doc(clientId).update({ tasks });
-            } catch (error) {
-                console.error("Error saving tasks:", error);
-                throw error;
-            }
-        }
+            // Modal controls
+            document.getElementById('cancelNewClient').addEventListener('click', () => {
+                document.getElementById('newClientModal').classList.add('hidden');
+            });
 
-        // Sign out
-        function signOut() {
-            auth.signOut().then(() => {
-                window.location.reload();
+            document.getElementById('cancelAddTask').addEventListener('click', () => {
+                document.getElementById('addTaskModal').classList.add('hidden');
+            });
+
+            // Form submissions
+            document.getElementById('newClientForm').addEventListener('submit', handleNewClient);
+            document.getElementById('addTaskForm').addEventListener('submit', handleAddTask);
+
+            // Save client info
+            document.getElementById('saveClientBtn').addEventListener('click', saveCurrentClient);
+
+            // Task management
+            document.getElementById('addTaskBtn').addEventListener('click', () => {
+                document.getElementById('addTaskModal').classList.remove('hidden');
+            });
+
+            // Filters
+            document.getElementById('environmentFilter').addEventListener('change', applyFilters);
+            document.getElementById('priorityFilter').addEventListener('change', applyFilters);
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+            document.getElementById('ownerFilter').addEventListener('change', applyFilters);
+
+            // Archive and completed toggles
+            document.getElementById('toggleArchivedBtn').addEventListener('click', toggleArchivedView);
+            document.getElementById('toggleCompletedBtn').addEventListener('click', toggleCompletedView);
+
+            // Export functions
+            document.getElementById('exportBtn').addEventListener('click', exportData);
+            document.getElementById('exportAllBtn').addEventListener('click', exportAllLaunchPlans);
+            document.getElementById('resetFilters').addEventListener('click', resetFilters);
+
+            // Report controls
+            document.getElementById('applyReportFilters').addEventListener('click', applyReportFilters);
+            document.getElementById('resetReportFilters').addEventListener('click', resetReportFilters);
+            document.getElementById('exportReportPDF').addEventListener('click', exportReportPDF);
+
+            // Close modals when clicking outside
+            document.getElementById('newClientModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('newClientModal')) {
+                    document.getElementById('newClientModal').classList.add('hidden');
+                }
+            });
+
+            document.getElementById('addTaskModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('addTaskModal')) {
+                    document.getElementById('addTaskModal').classList.add('hidden');
+                }
             });
         }
 
-        // Modify all data operations to use Firebase:
-        // 1. In handleNewClient: replace localStorage with saveClient()
-        async function handleNewClient(e) {
+        // Global search functionality
+        function handleGlobalSearch() {
+            const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (searchTerm.length < 2) {
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+
+            const results = clients.filter(client => 
+                client.name.toLowerCase().includes(searchTerm) ||
+                client.accountNumber.toLowerCase().includes(searchTerm) ||
+                client.aeName.toLowerCase().includes(searchTerm) ||
+                client.csName.toLowerCase().includes(searchTerm)
+            );
+
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<div class="search-result-item">No results found</div>';
+            } else {
+                resultsDiv.innerHTML = results.map(client => `
+                    <div class="search-result-item" onclick="selectSearchResult('${client.id}')">
+                        <div class="font-medium">${client.name}</div>
+                        <div class="text-sm text-gray-400">${client.accountNumber} - ${client.aeName}</div>
+                    </div>
+                `).join('');
+            }
+            
+            resultsDiv.classList.remove('hidden');
+        }
+
+        function selectSearchResult(clientId) {
+            document.getElementById('searchResults').classList.add('hidden');
+            document.getElementById('globalSearch').value = '';
+            document.getElementById('currentClientSelect').value = clientId;
+            loadClient(clientId);
+            switchTab('launch-plan');
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.blockchain-tab').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Initialize reports if switching to reports tab
+            if (tabName === 'reports') {
+                setTimeout(() => {
+                    initializeReports();
+                }, 100);
+            }
+        }
+
+        // Load clients into dropdown
+        function loadClientsDropdown() {
+            const select = document.getElementById('currentClientSelect');
+            select.innerHTML = '<option value="">Select a client...</option>';
+            
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.textContent = `${client.name} (${client.accountNumber})`;
+                select.appendChild(option);
+            });
+        }
+
+        // Handle new client creation
+        function handleNewClient(e) {
             e.preventDefault();
             
             const productType = document.getElementById('newProductType').value;
             const template = JSON.parse(JSON.stringify(productTemplates[productType]));
             
             const newClient = {
+                id: Date.now().toString(),
                 name: document.getElementById('newClientName').value,
                 accountNumber: document.getElementById('newAccountNumber').value,
                 productType: productType,
@@ -186,25 +1210,73 @@
                 archived: false,
                 tasks: template.map(task => ({
                     ...task,
-                    id: Date.now() + Math.random().toString(36).substr(2, 9),
+                    id: Date.now() + Math.random(),
+                    clientId: Date.now().toString()
                 }))
             };
             
-            try {
-                const savedClient = await saveClient(newClient);
-                document.getElementById('newClientModal').classList.add('hidden');
-                document.getElementById('newClientForm').reset();
-                
-                // Auto-select the new client
-                document.getElementById('currentClientSelect').value = savedClient.id;
-                loadClient(savedClient.id);
-            } catch (error) {
-                showNotification('Error creating client: ' + error.message, 'error');
-            }
+            // Sync task dates based on the new client's start and launch dates
+            const newStartDate = new Date(newClient.startDate);
+            const newLaunchDate = new Date(newClient.launchDate);
+            syncTaskDates(newClient, newStartDate, newLaunchDate);
+            
+            clients.push(newClient);
+            localStorage.setItem('launchPlanClients', JSON.stringify(clients));
+            
+            loadClientsDropdown();
+            renderClientDashboard();
+            renderClientTable();
+            updateOverallStats();
+            
+            document.getElementById('newClientModal').classList.add('hidden');
+            document.getElementById('newClientForm').reset();
+            
+            // Auto-select the new client
+            document.getElementById('currentClientSelect').value = newClient.id;
+            loadClient(newClient.id);
         }
 
-        // 2. In saveCurrentClient: replace localStorage with saveClient()
-        async function saveCurrentClient() {
+        // Load specific client
+        function loadClient(clientId) {
+            currentClient = clients.find(c => c.id === clientId);
+            if (!currentClient) return;
+            
+            // Populate form fields
+            document.getElementById('clientName').value = currentClient.name;
+            document.getElementById('accountNumber').value = currentClient.accountNumber;
+            document.getElementById('startDate').value = currentClient.startDate;
+            document.getElementById('launchDate').value = currentClient.launchDate;
+            document.getElementById('aeName').value = currentClient.aeName;
+            document.getElementById('csName').value = currentClient.csName;
+            
+            // Show client sections
+            showClientSections();
+            
+            // Load tasks
+            filteredTasks = [...currentClient.tasks];
+            renderTasks();
+            updateProgressStats();
+            initializeChart();
+        }
+
+        // Show client sections
+        function showClientSections() {
+            document.getElementById('projectOverview').style.display = 'block';
+            document.getElementById('progressOverview').style.display = 'block';
+            document.getElementById('filtersControls').style.display = 'block';
+            document.getElementById('taskManagement').style.display = 'block';
+        }
+
+        // Hide client sections
+        function hideClientSections() {
+            document.getElementById('projectOverview').style.display = 'none';
+            document.getElementById('progressOverview').style.display = 'none';
+            document.getElementById('filtersControls').style.display = 'none';
+            document.getElementById('taskManagement').style.display = 'none';
+        }
+
+        // Save current client with date sync
+        function saveCurrentClient() {
             if (!currentClient) return;
             
             const oldStartDate = new Date(currentClient.startDate);
@@ -221,111 +1293,1091 @@
             const newStartDate = new Date(currentClient.startDate);
             const newLaunchDate = new Date(currentClient.launchDate);
             
-            if (oldStartDate.getTime() !== newStartDate.getTime() || 
-                oldLaunchDate.getTime() !== newLaunchDate.getTime()) {
+            if (oldStartDate.getTime() !== newStartDate.getTime() || oldLaunchDate.getTime() !== newLaunchDate.getTime()) {
                 syncTaskDates(currentClient, newStartDate, newLaunchDate);
             }
             
-            try {
-                await saveClient(currentClient);
-                showNotification('Client information saved and dates synchronized!', 'success');
-            } catch (error) {
-                showNotification('Error saving client: ' + error.message, 'error');
+            localStorage.setItem('launchPlanClients', JSON.stringify(clients));
+            loadClientsDropdown();
+            renderClientDashboard();
+            renderClientTable();
+            updateOverallStats();
+            
+            if (filteredTasks.length > 0) {
+                renderTasks();
+            }
+            
+            showNotification('Client information saved and dates synchronized!', 'success');
+        }
+
+        // Sync task dates based on project dates
+        function syncTaskDates(client, newStartDate, newLaunchDate) {
+            const startDateStr = newStartDate.toISOString().split('T')[0];
+            
+            client.tasks.forEach(task => {
+                const taskStartDate = new Date(newStartDate);
+                taskStartDate.setDate(taskStartDate.getDate() + task.delay);
+                
+                const taskDueDate = new Date(taskStartDate);
+                taskDueDate.setDate(taskDueDate.getDate() + task.duration);
+                
+                task.startDate = taskStartDate.toISOString().split('T')[0];
+                task.dueDate = taskDueDate.toISOString().split('T')[0];
+            });
+        }
+
+        // Toggle archived view
+        function toggleArchivedView() {
+            showArchived = !showArchived;
+            showCompleted = false; // Reset completed view
+            
+            const archivedBtn = document.getElementById('toggleArchivedBtn');
+            const completedBtn = document.getElementById('toggleCompletedBtn');
+            
+            if (showArchived) {
+                archivedBtn.innerHTML = '<i class="fas fa-eye-slash mr-2"></i>Hide Archived';
+                archivedBtn.style.background = 'linear-gradient(45deg, var(--accent-orange), var(--accent-blue))';
+            } else {
+                archivedBtn.innerHTML = '<i class="fas fa-eye mr-2"></i>Show Archived';
+                archivedBtn.style.background = 'linear-gradient(45deg, var(--accent-blue), var(--accent-green))';
+            }
+            
+            // Reset completed button
+            completedBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Show Completed';
+            completedBtn.style.background = 'linear-gradient(45deg, var(--accent-blue), var(--accent-green))';
+            
+            renderClientDashboard();
+            renderClientTable();
+        }
+
+        // Toggle completed view
+        function toggleCompletedView() {
+            showCompleted = !showCompleted;
+            showArchived = false; // Reset archived view
+            
+            const completedBtn = document.getElementById('toggleCompletedBtn');
+            const archivedBtn = document.getElementById('toggleArchivedBtn');
+            
+            if (showCompleted) {
+                completedBtn.innerHTML = '<i class="fas fa-eye-slash mr-2"></i>Hide Completed';
+                completedBtn.style.background = 'linear-gradient(45deg, var(--accent-green), var(--accent-purple))';
+            } else {
+                completedBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Show Completed';
+                completedBtn.style.background = 'linear-gradient(45deg, var(--accent-blue), var(--accent-green))';
+            }
+            
+            // Reset archived button
+            archivedBtn.innerHTML = '<i class="fas fa-eye mr-2"></i>Show Archived';
+            archivedBtn.style.background = 'linear-gradient(45deg, var(--accent-blue), var(--accent-green))';
+            
+            renderClientDashboard();
+            renderClientTable();
+        }
+
+        // Archive client
+        function toggleClientArchive(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            if (client) {
+                client.archived = !client.archived;
+                localStorage.setItem('launchPlanClients', JSON.stringify(clients));
+                
+                renderClientDashboard();
+                renderClientTable();
+                updateOverallStats();
+                
+                const action = client.archived ? 'archived' : 'unarchived';
+                showNotification(`Client ${client.name} ${action} successfully!`, 'success');
             }
         }
 
-        // 3. In deleteClient: replace localStorage with deleteClient()
-        async function deleteClient(clientId) {
+        // Render client dashboard with blockchain hexagon design
+        function renderClientDashboard() {
+            const dashboard = document.getElementById('clientDashboard');
+            dashboard.innerHTML = '';
+            
+            let filteredClients = clients;
+            
+            if (showArchived) {
+                filteredClients = clients.filter(client => client.archived);
+            } else if (showCompleted) {
+                filteredClients = clients.filter(client => {
+                    const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                    return completedTasks === client.tasks.length;
+                });
+            } else {
+                filteredClients = clients.filter(client => !client.archived);
+            }
+            
+            filteredClients.forEach(client => {
+                const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                const totalTasks = client.tasks.length;
+                const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+                
+                const card = document.createElement('div');
+                card.className = 'client-hexagon min-w-[280px] flex-shrink-0';
+                
+                const statusBadge = client.archived ? 
+                    '<span class="blockchain-badge bg-gray-600">Archived</span>' :
+                    progressPercentage === 100 ? 
+                        '<span class="blockchain-badge">Completed</span>' :
+                        `<span class="blockchain-badge">${progressPercentage}% Complete</span>`;
+                
+                const productBadge = client.productType ? 
+                    `<span class="blockchain-badge" style="background: linear-gradient(45deg, var(--accent-purple), var(--accent-orange));">${client.productType}</span>` : '';
+                
+                card.innerHTML = `
+                    <div class="client-content">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="text-lg font-semibold mb-1">${client.name}</h3>
+                                <p class="text-sm text-gray-400">${client.accountNumber}</p>
+                            </div>
+                            <div class="text-right">
+                                ${statusBadge}
+                                ${productBadge}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm text-gray-400">Progress</span>
+                                <span class="text-sm font-semibold">${progressPercentage}%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="h-2 rounded-full transition-all duration-500" 
+                                     style="width: ${progressPercentage}%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <span class="text-gray-400">AE:</span>
+                                <p class="font-medium">${client.aeName}</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">CS:</span>
+                                <p class="font-medium">${client.csName}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 text-sm mt-3">
+                            <div>
+                                <span class="text-gray-400">Launch:</span>
+                                <p class="font-medium">${client.launchDate}</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">Tasks:</span>
+                                <p class="font-medium">${completedTasks}/${totalTasks}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                dashboard.appendChild(card);
+            });
+            
+            if (filteredClients.length === 0) {
+                dashboard.innerHTML = '<div class="text-center text-gray-400 py-8">No clients to display</div>';
+            }
+        }
+
+        // Render client table
+        function renderClientTable() {
+            const tbody = document.getElementById('clientTableBody');
+            tbody.innerHTML = '';
+            
+            let filteredClients = clients;
+            
+            if (showArchived) {
+                filteredClients = clients.filter(client => client.archived);
+            } else if (showCompleted) {
+                filteredClients = clients.filter(client => {
+                    const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                    return completedTasks === client.tasks.length;
+                });
+            } else {
+                filteredClients = clients.filter(client => !client.archived);
+            }
+            
+            filteredClients.forEach(client => {
+                const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                const totalTasks = client.tasks.length;
+                const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+                
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-800';
+                
+                const statusBadge = client.archived ? 
+                    '<span class="blockchain-badge bg-gray-600">Archived</span>' :
+                    progressPercentage === 100 ? 
+                        '<span class="blockchain-badge">Completed</span>' :
+                        '<span class="blockchain-badge bg-blue-600">Active</span>';
+                
+                const archiveAction = client.archived ? 
+                    `<button class="text-blue-400 hover:text-blue-300 mr-2" onclick="toggleClientArchive('${client.id}')" title="Unarchive">
+                        <i class="fas fa-undo"></i>
+                    </button>` :
+                    `<button class="text-orange-400 hover:text-orange-300 mr-2" onclick="toggleClientArchive('${client.id}')" title="Archive">
+                        <i class="fas fa-archive"></i>
+                    </button>`;
+                
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-medium">${client.name}</td>
+                    <td class="px-4 py-3">${client.accountNumber}</td>
+                    <td class="px-4 py-3">${client.productType || 'Trading'}</td>
+                    <td class="px-4 py-3">${client.aeName}</td>
+                    <td class="px-4 py-3">${client.csName}</td>
+                    <td class="px-4 py-3">${client.startDate}</td>
+                    <td class="px-4 py-3">${client.launchDate}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex items-center">
+                            <div class="w-full bg-gray-700 rounded-full h-2 mr-2">
+                                <div class="h-2 rounded-full" style="width: ${progressPercentage}%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));"></div>
+                            </div>
+                            <span class="text-sm font-medium">${progressPercentage}%</span>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3">${statusBadge}</td>
+                    <td class="px-4 py-3">
+                        ${archiveAction}
+                        <button class="text-blue-400 hover:text-blue-300 mr-2" onclick="editClient('${client.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="text-red-400 hover:text-red-300" onclick="deleteClient('${client.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Edit client
+        function editClient(clientId) {
+            document.getElementById('currentClientSelect').value = clientId;
+            loadClient(clientId);
+            switchTab('launch-plan');
+        }
+
+        // Delete client
+        function deleteClient(clientId) {
             if (confirm('Are you sure you want to delete this client and all their tasks?')) {
-                try {
-                    await deleteClient(clientId);
-                    
-                    if (currentClient && currentClient.id === clientId) {
-                        currentClient = null;
-                        hideClientSections();
-                        document.getElementById('currentClientSelect').value = '';
-                    }
-                } catch (error) {
-                    showNotification('Error deleting client: ' + error.message, 'error');
+                clients = clients.filter(c => c.id !== clientId);
+                localStorage.setItem('launchPlanClients', JSON.stringify(clients));
+                
+                loadClientsDropdown();
+                renderClientDashboard();
+                renderClientTable();
+                updateOverallStats();
+                
+                if (currentClient && currentClient.id === clientId) {
+                    currentClient = null;
+                    hideClientSections();
+                    document.getElementById('currentClientSelect').value = '';
                 }
             }
         }
 
-        // 4. In updateTaskStatus: replace localStorage with saveTasks()
-        async function updateTaskStatus(taskId, newStatus) {
+        // Update overall statistics
+        function updateOverallStats() {
+            const activeClients = clients.filter(c => !c.archived);
+            const totalClients = activeClients.length;
+            const completedLaunches = activeClients.filter(client => {
+                const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                return completedTasks === client.tasks.length;
+            }).length;
+            const activeLaunches = totalClients - completedLaunches;
+            const overdueClients = activeClients.filter(client => {
+                const launchDate = new Date(client.launchDate);
+                const today = new Date();
+                const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                return launchDate < today && completedTasks < client.tasks.length;
+            }).length;
+            
+            document.getElementById('totalClients').textContent = totalClients;
+            document.getElementById('completedLaunches').textContent = completedLaunches;
+            document.getElementById('activeLaunches').textContent = activeLaunches;
+            document.getElementById('overdueClients').textContent = overdueClients;
+            
+            updateOverallChart();
+        }
+
+        // Initialize overall chart
+        function initializeOverallChart() {
+            const ctx = document.getElementById('overallChart').getContext('2d');
+            
+            overallChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Active', 'Overdue'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            'rgba(0, 255, 136, 0.8)',
+                            'rgba(0, 212, 255, 0.8)',
+                            'rgba(255, 107, 53, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(0, 255, 136, 1)',
+                            'rgba(0, 212, 255, 1)',
+                            'rgba(255, 107, 53, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e0e6ed'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update overall chart
+        function updateOverallChart() {
+            if (overallChart) {
+                const activeClients = clients.filter(c => !c.archived);
+                const totalClients = activeClients.length;
+                const completedLaunches = activeClients.filter(client => {
+                    const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                    return completedTasks === client.tasks.length;
+                }).length;
+                const activeLaunches = totalClients - completedLaunches;
+                const overdueClients = activeClients.filter(client => {
+                    const launchDate = new Date(client.launchDate);
+                    const today = new Date();
+                    const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                    return launchDate < today && completedTasks < client.tasks.length;
+                }).length;
+                
+                overallChart.data.datasets[0].data = [completedLaunches, activeLaunches, overdueClients];
+                overallChart.update();
+            }
+        }
+
+        // Render tasks table
+        function renderTasks() {
+            const tbody = document.getElementById('taskTableBody');
+            tbody.innerHTML = '';
+
+            filteredTasks.forEach(task => {
+                const row = document.createElement('tr');
+                row.className = `task-row ${task.priority === 'Required' ? 'priority-required' : 'priority-optional'}`;
+                
+                const environmentClass = `env-${task.environment.toLowerCase().replace('/', '-')}`;
+                const statusClass = `status-${task.status.toLowerCase().replace(' ', '-')}`;
+
+                row.innerHTML = `
+                    <td class="px-4 py-3 ${environmentClass}">
+                        <span class="inline-block px-2 py-1 text-xs font-medium rounded-full">
+                            ${task.environment}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 font-medium">${task.task}</td>
+                    <td class="px-4 py-3">${task.owner}</td>
+                    <td class="px-4 py-3">
+                        <span class="blockchain-badge ${task.priority === 'Required' ? 'bg-orange-600' : 'bg-green-600'}">
+                            ${task.priority}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <select class="blockchain-input status-select p-1 text-sm ${statusClass}" data-task-id="${task.id}">
+                            <option value="To do" ${task.status === 'To do' ? 'selected' : ''}>To do</option>
+                            <option value="In progress" ${task.status === 'In progress' ? 'selected' : ''}>In progress</option>
+                            <option value="To discuss" ${task.status === 'To discuss' ? 'selected' : ''}>To discuss</option>
+                            <option value="Done" ${task.status === 'Done' ? 'selected' : ''}>Done</option>
+                        </select>
+                    </td>
+                    <td class="px-4 py-3 text-sm">${task.startDate}</td>
+                    <td class="px-4 py-3 text-sm">${task.dueDate}</td>
+                    <td class="px-4 py-3 text-sm">${task.duration} days</td>
+                    <td class="px-4 py-3">
+                        <button class="delete-task text-red-400 hover:text-red-300" data-task-id="${task.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(row);
+            });
+
+            // Add event listeners for status changes
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    const taskId = this.dataset.taskId;
+                    updateTaskStatus(taskId, this.value);
+                });
+            });
+
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-task').forEach(button => {
+                button.addEventListener('click', function() {
+                    const taskId = this.dataset.taskId;
+                    deleteTask(taskId);
+                });
+            });
+        }
+
+        // Update task status
+        function updateTaskStatus(taskId, newStatus) {
             const task = currentClient.tasks.find(t => t.id == taskId);
             if (task) {
                 task.status = newStatus;
-                try {
-                    await saveTasks(currentClient.id, currentClient.tasks);
-                } catch (error) {
-                    showNotification('Error updating task: ' + error.message, 'error');
-                }
+                localStorage.setItem('launchPlanClients', JSON.stringify(clients));
+                updateProgressStats();
+                renderClientDashboard();
+                renderClientTable();
+                updateOverallStats();
             }
         }
 
-        // 5. In deleteTask: replace localStorage with saveTasks()
-        async function deleteTask(taskId) {
+        // Delete task
+        function deleteTask(taskId) {
             if (confirm('Are you sure you want to delete this task?')) {
                 currentClient.tasks = currentClient.tasks.filter(t => t.id != taskId);
-                try {
-                    await saveTasks(currentClient.id, currentClient.tasks);
-                    applyFilters();
-                } catch (error) {
-                    showNotification('Error deleting task: ' + error.message, 'error');
-                }
+                localStorage.setItem('launchPlanClients', JSON.stringify(clients));
+                applyFilters();
+                renderClientDashboard();
+                renderClientTable();
+                updateOverallStats();
             }
         }
 
-        // 6. In handleAddTask: replace localStorage with saveTasks()
-        async function handleAddTask(e) {
+        // Update progress statistics
+        function updateProgressStats() {
+            if (!currentClient) return;
+            
+            const totalTasks = filteredTasks.length;
+            const completedTasks = filteredTasks.filter(task => task.status === 'Done').length;
+            const inProgressTasks = filteredTasks.filter(task => task.status === 'In progress').length;
+            const overdueTasks = filteredTasks.filter(task => {
+                const dueDate = new Date(task.dueDate);
+                const today = new Date();
+                return dueDate < today && task.status !== 'Done';
+            }).length;
+
+            document.getElementById('totalTasks').textContent = totalTasks;
+            document.getElementById('completedTasks').textContent = completedTasks;
+            document.getElementById('inProgressTasks').textContent = inProgressTasks;
+            document.getElementById('overdueTasks').textContent = overdueTasks;
+
+            updateChart();
+        }
+
+        // Initialize chart
+        function initializeChart() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            if (progressChart) {
+                progressChart.destroy();
+            }
+            
+            const statusCounts = {
+                'To do': filteredTasks.filter(task => task.status === 'To do').length,
+                'In progress': filteredTasks.filter(task => task.status === 'In progress').length,
+                'To discuss': filteredTasks.filter(task => task.status === 'To discuss').length,
+                'Done': filteredTasks.filter(task => task.status === 'Done').length
+            };
+
+            progressChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusCounts),
+                    datasets: [{
+                        data: Object.values(statusCounts),
+                        backgroundColor: [
+                            'rgba(255, 107, 53, 0.8)',
+                            'rgba(0, 212, 255, 0.8)',
+                            'rgba(168, 85, 247, 0.8)',
+                            'rgba(0, 255, 136, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 107, 53, 1)',
+                            'rgba(0, 212, 255, 1)',
+                            'rgba(168, 85, 247, 1)',
+                            'rgba(0, 255, 136, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e0e6ed'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update chart
+        function updateChart() {
+            if (progressChart) {
+                const statusCounts = {
+                    'To do': filteredTasks.filter(task => task.status === 'To do').length,
+                    'In progress': filteredTasks.filter(task => task.status === 'In progress').length,
+                    'To discuss': filteredTasks.filter(task => task.status === 'To discuss').length,
+                    'Done': filteredTasks.filter(task => task.status === 'Done').length
+                };
+
+                progressChart.data.datasets[0].data = Object.values(statusCounts);
+                progressChart.update();
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            if (!currentClient) return;
+            
+            const environmentFilter = document.getElementById('environmentFilter').value;
+            const priorityFilter = document.getElementById('priorityFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const ownerFilter = document.getElementById('ownerFilter').value;
+
+            filteredTasks = currentClient.tasks.filter(task => {
+                return (!environmentFilter || task.environment === environmentFilter) &&
+                       (!priorityFilter || task.priority === priorityFilter) &&
+                       (!statusFilter || task.status === statusFilter) &&
+                       (!ownerFilter || task.owner === ownerFilter);
+            });
+
+            renderTasks();
+            updateProgressStats();
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('environmentFilter').value = '';
+            document.getElementById('priorityFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('ownerFilter').value = '';
+            applyFilters();
+        }
+
+        // Handle add task
+        function handleAddTask(e) {
             e.preventDefault();
             
             if (!currentClient) return;
             
             const taskData = {
-                id: Date.now() + Math.random().toString(36).substr(2, 9),
+                id: Date.now() + Math.random(),
                 environment: document.getElementById('newTaskEnvironment').value,
                 task: document.getElementById('newTaskDescription').value,
                 owner: document.getElementById('newTaskOwner').value,
                 priority: document.getElementById('newTaskPriority').value,
                 status: 'To do',
                 startDate: document.getElementById('newTaskStartDate').value,
-                dueDate: calculateDueDate(
-                    document.getElementById('newTaskStartDate').value, 
-                    document.getElementById('newTaskDuration').value
-                ),
+                dueDate: calculateDueDate(document.getElementById('newTaskStartDate').value, document.getElementById('newTaskDuration').value),
                 duration: parseInt(document.getElementById('newTaskDuration').value),
-                delay: 0
+                delay: 0,
+                clientId: currentClient.id
             };
             
             currentClient.tasks.push(taskData);
+            localStorage.setItem('launchPlanClients', JSON.stringify(clients));
             
-            try {
-                await saveTasks(currentClient.id, currentClient.tasks);
-                document.getElementById('addTaskModal').classList.add('hidden');
-                document.getElementById('addTaskForm').reset();
-            } catch (error) {
-                showNotification('Error adding task: ' + error.message, 'error');
-            }
+            applyFilters();
+            renderClientDashboard();
+            renderClientTable();
+            updateOverallStats();
+            
+            document.getElementById('addTaskModal').classList.add('hidden');
+            document.getElementById('addTaskForm').reset();
         }
 
-        // 7. In toggleClientArchive: replace localStorage with saveClient()
-        async function toggleClientArchive(clientId) {
-            const client = clients.find(c => c.id === clientId);
-            if (client) {
-                client.archived = !client.archived;
-                try {
-                    await saveClient(client);
-                    const action = client.archived ? 'archived' : 'unarchived';
-                    showNotification(`Client ${client.name} ${action} successfully!`, 'success');
-                } catch (error) {
-                    showNotification('Error updating client: ' + error.message, 'error');
+        // Calculate due date
+        function calculateDueDate(startDate, duration) {
+            const start = new Date(startDate);
+            const due = new Date(start);
+            due.setDate(start.getDate() + parseInt(duration));
+            return due.toISOString().split('T')[0];
+        }
+
+        // Export data
+        function exportData() {
+            if (!currentClient) return;
+            
+            const csvContent = [
+                ['Environment', 'Task', 'Owner', 'Priority', 'Status', 'Start Date', 'Due Date', 'Duration'].join(','),
+                ...filteredTasks.map(task => [
+                    task.environment,
+                    `"${task.task}"`,
+                    task.owner,
+                    task.priority,
+                    task.status,
+                    task.startDate,
+                    task.dueDate,
+                    task.duration
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentClient.name}_launch_plan_tasks.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Export all launch plans
+        function exportAllLaunchPlans() {
+            if (clients.length === 0) {
+                alert('No clients to export');
+                return;
+            }
+
+            const csvContent = [
+                ['Client Name', 'Account#', 'Product', 'AE', 'CS', 'Start Date', 'Launch Date', 'Progress', 'Environment', 'Task', 'Owner', 'Priority', 'Status', 'Start Date', 'Due Date', 'Duration'].join(','),
+                ...clients.flatMap(client => {
+                    const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                    const totalTasks = client.tasks.length;
+                    const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+                    
+                    return client.tasks.map(task => [
+                        `"${client.name}"`,
+                        client.accountNumber,
+                        client.productType || 'Trading',
+                        `"${client.aeName}"`,
+                        `"${client.csName}"`,
+                        client.startDate,
+                        client.launchDate,
+                        `${progressPercentage}%`,
+                        `"${task.environment}"`,
+                        `"${task.task}"`,
+                        `"${task.owner}"`,
+                        task.priority,
+                        task.status,
+                        task.startDate,
+                        task.dueDate,
+                        task.duration
+                    ].join(','));
+                })
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `All_Launch_Plans_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Reports functionality
+        function initializeReports() {
+            populateReportFilters();
+            updateReportStats();
+            initializeReportCharts();
+        }
+
+        function populateReportFilters() {
+            const aeFilter = document.getElementById('reportAEFilter');
+            const uniqueAEs = [...new Set(clients.map(client => client.aeName))].filter(ae => ae);
+            
+            aeFilter.innerHTML = '<option value="">All AEs</option>';
+            uniqueAEs.forEach(ae => {
+                const option = document.createElement('option');
+                option.value = ae;
+                option.textContent = ae;
+                aeFilter.appendChild(option);
+            });
+        }
+
+        function updateReportStats() {
+            const activeClients = clients.filter(c => !c.archived);
+            const totalClients = activeClients.length;
+            
+            const totalProgress = activeClients.reduce((sum, client) => {
+                const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                return sum + (client.tasks.length > 0 ? (completedTasks / client.tasks.length) * 100 : 0);
+            }, 0);
+            
+            const avgProgress = totalClients > 0 ? Math.round(totalProgress / totalClients) : 0;
+            
+            const onTimeClients = activeClients.filter(client => {
+                const launchDate = new Date(client.launchDate);
+                const today = new Date();
+                const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                return completedTasks === client.tasks.length || launchDate >= today;
+            }).length;
+            
+            const onTimeDelivery = totalClients > 0 ? Math.round((onTimeClients / totalClients) * 100) : 0;
+            
+            const activeProjects = activeClients.filter(client => {
+                const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                return completedTasks < client.tasks.length;
+            }).length;
+            
+            document.getElementById('reportTotalClients').textContent = totalClients;
+            document.getElementById('reportAvgProgress').textContent = `${avgProgress}%`;
+            document.getElementById('reportOnTimeDelivery').textContent = `${onTimeDelivery}%`;
+            document.getElementById('reportActiveProjects').textContent = activeProjects;
+        }
+
+        function initializeReportCharts() {
+            initProgressDistributionChart();
+            initTaskStatusChart();
+            initProductPerformanceChart();
+            initAEPerformanceChart();
+            populateReportTable();
+        }
+
+        function initProgressDistributionChart() {
+            const ctx = document.getElementById('progressDistributionChart').getContext('2d');
+            
+            if (progressDistributionChart) {
+                progressDistributionChart.destroy();
+            }
+            
+            const ranges = { '0-25%': 0, '26-50%': 0, '51-75%': 0, '76-100%': 0 };
+            
+            clients.filter(c => !c.archived).forEach(client => {
+                const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                const progress = client.tasks.length > 0 ? Math.round((completedTasks / client.tasks.length) * 100) : 0;
+                
+                if (progress <= 25) ranges['0-25%']++;
+                else if (progress <= 50) ranges['26-50%']++;
+                else if (progress <= 75) ranges['51-75%']++;
+                else ranges['76-100%']++;
+            });
+            
+            progressDistributionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(ranges),
+                    datasets: [{
+                        label: 'Number of Clients',
+                        data: Object.values(ranges),
+                        backgroundColor: 'rgba(0, 212, 255, 0.8)',
+                        borderColor: 'rgba(0, 212, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0e6ed'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#e0e6ed'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#e0e6ed'
+                            }
+                        }
+                    }
                 }
-            }
+            });
         }
 
-        // ... (rest of the code remains similar, but remove all localStorage references) ...
+        function initTaskStatusChart() {
+            const ctx = document.getElementById('taskStatusChart').getContext('2d');
+            
+            if (taskStatusChart) {
+                taskStatusChart.destroy();
+            }
+            
+            const statusCounts = { 'To do': 0, 'In progress': 0, 'To discuss': 0, 'Done': 0 };
+            
+            clients.filter(c => !c.archived).forEach(client => {
+                client.tasks.forEach(task => {
+                    statusCounts[task.status]++;
+                });
+            });
+            
+            taskStatusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusCounts),
+                    datasets: [{
+                        data: Object.values(statusCounts),
+                        backgroundColor: [
+                            'rgba(255, 107, 53, 0.8)',
+                            'rgba(0, 212, 255, 0.8)',
+                            'rgba(168, 85, 247, 0.8)',
+                            'rgba(0, 255, 136, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 107, 53, 1)',
+                            'rgba(0, 212, 255, 1)',
+                            'rgba(168, 85, 247, 1)',
+                            'rgba(0, 255, 136, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e0e6ed'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initProductPerformanceChart() {
+            const ctx = document.getElementById('productPerformanceChart').getContext('2d');
+            
+            if (productPerformanceChart) {
+                productPerformanceChart.destroy();
+            }
+            
+            const productData = {};
+            
+            clients.filter(c => !c.archived).forEach(client => {
+                const product = client.productType || 'Trading';
+                if (!productData[product]) {
+                    productData[product] = { total: 0, completed: 0 };
+                }
+                productData[product].total++;
+                
+                const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                if (completedTasks === client.tasks.length) {
+                    productData[product].completed++;
+                }
+            });
+            
+            const products = Object.keys(productData);
+            const completionRates = products.map(product => {
+                const data = productData[product];
+                return data.total > 0 ? Math.round((data.completed / data.total) * 100) : 0;
+            });
+            
+            productPerformanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: products,
+                    datasets: [{
+                        label: 'Completion Rate (%)',
+                        data: completionRates,
+                        backgroundColor: 'rgba(0, 255, 136, 0.8)',
+                        borderColor: 'rgba(0, 255, 136, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0e6ed'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: '#e0e6ed'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#e0e6ed'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initAEPerformanceChart() {
+            const ctx = document.getElementById('aePerformanceChart').getContext('2d');
+            
+            if (aePerformanceChart) {
+                aePerformanceChart.destroy();
+            }
+            
+            const aeData = {};
+            
+            clients.filter(c => !c.archived).forEach(client => {
+                const ae = client.aeName;
+                if (!aeData[ae]) {
+                    aeData[ae] = { total: 0, totalProgress: 0 };
+                }
+                aeData[ae].total++;
+                
+                const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                const progress = client.tasks.length > 0 ? (completedTasks / client.tasks.length) * 100 : 0;
+                aeData[ae].totalProgress += progress;
+            });
+            
+            const aes = Object.keys(aeData);
+            const avgProgress = aes.map(ae => {
+                const data = aeData[ae];
+                return data.total > 0 ? Math.round(data.totalProgress / data.total) : 0;
+            });
+            
+            aePerformanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: aes,
+                    datasets: [{
+                        label: 'Average Progress (%)',
+                        data: avgProgress,
+                        backgroundColor: 'rgba(168, 85, 247, 0.8)',
+                        borderColor: 'rgba(168, 85, 247, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0e6ed'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: '#e0e6ed'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#e0e6ed'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function populateReportTable() {
+            const tbody = document.getElementById('reportTableBody');
+            tbody.innerHTML = '';
+            
+            clients.filter(c => !c.archived).forEach(client => {
+                const completedTasks = client.tasks.filter(task => task.status === 'Done').length;
+                const totalTasks = client.tasks.length;
+                const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+                
+                const startDate = new Date(client.startDate);
+                const today = new Date();
+                const daysActive = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+                
+                const status = progressPercentage === 100 ? 'Completed' : 
+                             new Date(client.launchDate) < today ? 'Overdue' : 'Active';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-medium">${client.name}</td>
+                    <td class="px-4 py-3">${client.productType || 'Trading'}</td>
+                    <td class="px-4 py-3">${client.aeName}</td>
+                    <td class="px-4 py-3">${progressPercentage}%</td>
+                    <td class="px-4 py-3">${completedTasks}/${totalTasks}</td>
+                    <td class="px-4 py-3">${daysActive}</td>
+                    <td class="px-4 py-3">
+                        <span class="blockchain-badge ${status === 'Completed' ? 'bg-green-600' : status === 'Overdue' ? 'bg-red-600' : 'bg-blue-600'}">
+                            ${status}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function applyReportFilters() {
+            // Filter logic would go here
+            initializeReportCharts();
+        }
+
+        function resetReportFilters() {
+            document.getElementById('reportDateFilter').value = '';
+            document.getElementById('reportAEFilter').value = '';
+            document.getElementById('reportProductFilter').value = '';
+            document.getElementById('reportStatusFilter').value = '';
+            initializeReportCharts();
+        }
+
+        function exportReportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(20);
+            doc.text('Launch Plan Analytics Report', 20, 20);
+            
+            // Add date
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 40);
+            
+            // Add summary stats
+            doc.setFontSize(14);
+            doc.text('Executive Summary', 20, 60);
+            doc.setFontSize(12);
+            doc.text(`Total Launch Plans: ${document.getElementById('reportTotalClients').textContent}`, 20, 80);
+            doc.text(`Average Progress: ${document.getElementById('reportAvgProgress').textContent}`, 20, 90);
+            doc.text(`On-Time Delivery: ${document.getElementById('reportOnTimeDelivery').textContent}`, 20, 100);
+            doc.text(`Active Projects: ${document.getElementById('reportActiveProjects').textContent}`, 20, 110);
+            
+            // Save the PDF
+            doc.save(`Launch_Plan_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg text-white ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 
+                'bg-blue-600'
+            } shadow-lg transition-all duration-300`;
+            
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation-triangle' : 'info'} mr-2"></i>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
 
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', initializeApp);
